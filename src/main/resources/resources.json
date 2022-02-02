@@ -1,0 +1,10 @@
+{
+  "resources": [
+    {
+      "pattern": "words_en.txt"
+    },
+    {
+      "pattern": "words_ro.txt"
+    }
+  ]
+}
