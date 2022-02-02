@@ -7,6 +7,7 @@ import static java.lang.System.out;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,12 +43,41 @@ public class WordGuess implements QuarkusApplication {
     return wordsStream;
   }
 
-  private static void loadWords() throws IOException {
+  private static void loadWords(String... args) throws IOException {
+    if (args != null && args.length == 2 && args[1].length() != 2) {
+      loadUserProvidedDictionary(args[1]);
+    } else {
+      loadBuiltInDictionary();
+    }
+
+    printStartingLines();
+  }
+
+  private static void printStartingLines() {
+    String lettersFormat = Ansi.ansi().fgGreen().bold().a(wordSize + " letter").reset().toString();
+    String maxTriesFormat = Ansi.ansi().fgYellow().bold().a(MAX_TRIES.get(wordSize)).reset().toString();
+    String languageFormat = Ansi.ansi().fgYellow().bold().a(language).reset().toString();
+    String wordsFormat = Ansi.ansi().fgGreen().bold().a(words.size()).reset().toString();
+
+    out.printf("Playing with %s words.%n", lettersFormat);
+    out.printf("Max tries: %s. Language: %s. %n", maxTriesFormat, languageFormat);
+    out.printf("%s words loaded. %n%n", wordsFormat);
+  }
+
+  private static void loadUserProvidedDictionary(String file) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+      words = reader.lines().filter(word -> word.length() == wordSize).collect(Collectors.toList());
+      language = "user provided";
+    } catch (IOException e) {
+      System.err.printf("Could not load user provided dictionary %s: %s %n", file, e.getMessage());
+    }
+  }
+
+  private static void loadBuiltInDictionary() throws IOException {
     try (InputStream wordsStream = getWordsInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(wordsStream)))) {
       words = reader.lines().filter(word -> word.length() == wordSize).collect(Collectors.toList());
     }
-    out.println("Playing with " + wordSize + " word size. Max tries " + MAX_TRIES.get(wordSize) + ". " + words.size() + " words loaded!");
   }
 
   private static void selectWord() {
@@ -58,10 +88,10 @@ public class WordGuess implements QuarkusApplication {
 
   private static void setWordSizeAndLanguage(String... args) {
     try {
-      if (args != null && args.length == 1) {
+      if (args != null) {
         wordSize = Integer.parseInt(args[0]);
-      } else if (args != null && args.length == 2) {
-        wordSize = Integer.parseInt(args[0]);
+      }
+      if (args != null && args.length == 2 && args[1].trim().length() == 2) {
         language = args[1].toLowerCase(Locale.ROOT).trim();
       }
       if (wordSize > 9 || wordSize < 4) {
@@ -69,13 +99,13 @@ public class WordGuess implements QuarkusApplication {
         wordSize = 5;
       }
     } catch (Exception e) {
-      out.println("Invalid word size. Defaulting to 5 and language EN");
+      out.println("Invalid word size. Defaulting to 5 and language en");
     }
   }
 
   private static void playGame(String[] args) throws IOException {
     setWordSizeAndLanguage(args);
-    loadWords();
+    loadWords(args);
     selectWord();
     startGame();
   }
@@ -86,7 +116,7 @@ public class WordGuess implements QuarkusApplication {
 
     while (counter <= maxTries && !guessed) {
       Scanner scanner = new Scanner(in);
-      out.println("Attempt " + counter + " / " + maxTries + ":");
+      out.printf("Attempt %s / %s: %n", counter, maxTries);
       String word = scanner.nextLine();
       if (!isValidWord(word)) {
         out.println("Not a valid word!");
@@ -97,16 +127,23 @@ public class WordGuess implements QuarkusApplication {
       counter++;
     }
 
+    finishGame(guessed);
+  }
+
+  private static void finishGame(boolean guessed) {
     if (guessed) {
       printGuessMatrix();
     } else {
-      out.println("Word: " + selectedWord);
+      String selectedWordFormat = Ansi.ansi().fgYellow().bold().a(selectedWord).reset().toString();
+      out.printf("%nBetter luck next time. Selected word was: %s%n", selectedWordFormat);
     }
   }
 
   private static void printGuessMatrix() {
+    String sequenceFormat = Ansi.ansi().fgGreen().bold().a(Ansi.Attribute.UNDERLINE).a("Congrats! Guess sequence:").reset().toString();
     out.println("   ");
-    out.println("Sequence:");
+    out.println(sequenceFormat);
+    out.println(lineSeparator());
     out.println(GUESS_MATRIX);
   }
 
@@ -116,15 +153,17 @@ public class WordGuess implements QuarkusApplication {
 
   private static void match(String word) {
     StringBuilder finalPrint = new StringBuilder();
-    Set<Integer> markedYellow = new HashSet<>();
+    Set<Integer> markedIndexes = new HashSet<>();
 
     for (int i = 0; i < word.length(); i++) {
-      int indexOfCurrentChar = nextIndexOf(word.charAt(i), markedYellow);
+      int indexOfCurrentChar = nextIndexOf(word.charAt(i), markedIndexes);
       if (selectedWord.charAt(i) == word.charAt(i)) {
+        markedIndexes.clear();
+        markedIndexes.add(i);
         finalPrint.append(formatResult(Ansi.Color.GREEN, word.charAt(i)));
         GUESS_MATRIX.append(formatResult(Ansi.Color.GREEN, ' '));
       } else if (indexOfCurrentChar != -1 && selectedWord.charAt(indexOfCurrentChar) != word.charAt(indexOfCurrentChar)) {
-        markedYellow.add(indexOfCurrentChar);
+        markedIndexes.add(indexOfCurrentChar);
         finalPrint.append(formatResult(Ansi.Color.YELLOW, word.charAt(i)));
         GUESS_MATRIX.append(formatResult(Ansi.Color.YELLOW, ' '));
       } else {
@@ -136,10 +175,10 @@ public class WordGuess implements QuarkusApplication {
     out.println(finalPrint);
   }
 
-  private static int nextIndexOf(char currentChar, Set<Integer> markedYellow) {
+  private static int nextIndexOf(char currentChar, Set<Integer> markedIndexes) {
     int index = selectedWord.indexOf(currentChar);
 
-    if (markedYellow.contains(index)) {
+    if (markedIndexes.contains(index)) {
       index = selectedWord.indexOf(currentChar, index + 1);
     }
     return index;
@@ -158,4 +197,5 @@ public class WordGuess implements QuarkusApplication {
     playGame(args);
     return 0;
   }
+
 }
