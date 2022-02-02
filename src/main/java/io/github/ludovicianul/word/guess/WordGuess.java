@@ -135,7 +135,9 @@ public class WordGuess implements QuarkusApplication {
       printGuessMatrix();
     } else {
       String selectedWordFormat = Ansi.ansi().fgYellow().bold().a(selectedWord).reset().toString();
-      out.printf("%nBetter luck next time. Selected word was: %s%n", selectedWordFormat);
+      String wordDefinition = Ansi.ansi().a(Ansi.Attribute.INTENSITY_FAINT).a(WordDefinition.getDefinition(selectedWord, language)).reset().toString();
+
+      out.printf("%nBetter luck next time. Selected word was: %s - %s%n", selectedWordFormat, wordDefinition);
     }
   }
 
@@ -143,7 +145,6 @@ public class WordGuess implements QuarkusApplication {
     String sequenceFormat = Ansi.ansi().fgGreen().bold().a(Ansi.Attribute.UNDERLINE).a("Congrats! Guess sequence:").reset().toString();
     out.println("   ");
     out.println(sequenceFormat);
-    out.println(lineSeparator());
     out.println(GUESS_MATRIX);
   }
 

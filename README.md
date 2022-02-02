@@ -1,5 +1,6 @@
 # Word Guess
-Wordle-like game with multiple dictionaries and multiple word lengths.
+Wordle-like command line game with multiple dictionaries and multiple word lengths. Play and learn new words. 
+Everytime you fail to guess the selected word, you will get its short definition as well as a link to more detailed explanations.
 
 <p  align="center">
   <img src="./images/game1.png" width="50%"  />
