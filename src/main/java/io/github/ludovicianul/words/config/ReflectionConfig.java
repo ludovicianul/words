@@ -1,4 +1,4 @@
-package io.github.ludovicianul.word.guess;
+package io.github.ludovicianul.words.config;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import us.codecraft.xsoup.XElement;

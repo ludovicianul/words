@@ -1,6 +1,7 @@
-# Word Guess
-Wordle-like command line game with multiple dictionaries and multiple word lengths. Play and learn new words. 
-Everytime you fail to guess the selected word, you will get its short definition as well as a link to more detailed explanations.
+# Words
+`Words` is a set of command line games based on word guessing. Best way to spend those minutes within the CLI while your builds are running ;).  
+
+Each game has multiple dictionaries and word lengths. With `Words` you will also learn new words. Everytime you fail to guess the selected word, you will get its short definition as well as a link to more detailed explanations.
 
 <p  align="center">
   <img src="./images/game1.png" width="50%"  />
@@ -8,41 +9,41 @@ Everytime you fail to guess the selected word, you will get its short definition
 </p>
 
 # Use
-Download the native binary for your platform from the releases page: [https://github.com/ludovicianul/word-guess/releases](https://github.com/ludovicianul/word-guess/releases).
+Download the native binary for your platform from the releases page: [https://github.com/ludovicianul/words/releases](https://github.com/ludovicianul/words/releases).
 
-You can also `word-guess` to PATH so that you have available at any time. Example for macOS:
+You can also add `words` to PATH so that you have it available at any time. Example for macOS:
 
 ```shell
-> cp word-guess-macos /usr/local/bin/wg
+> cp words-macos /usr/local/bin/words
 ```
 
 # Running the game
-Word-Guess has 2 built-in dictionaries: English and Romanian. The game can be played with words length between 4 and 9.
+`Words` has (currently) 2 built-in games: Wordle and Hangman. Each of these games have 2 built-in dictionaries: English and Romanian. The games can be played with words length between 4 and 15.
 
 ```shell
-wg [letters] [language] [user_dictionary]
+words -w [letters] -l [language] -d [user_dictionary]
 ```
 
 When no params are provided, the default is: 5-letter words with the built-in English dictionary.
 
 ## Examples:
 
-This will run the game with 5-letter Romanian words.
+This will run Wordle with 5-letter Romanian words.
 
 ```shell
-> wg 5 ro
+> words -w 5 -l ro
 ```
 
-This will run the game with 6-letter English words.
+This will run Hangman with 6-letter English words.
 
 ```shell
-> wp 6 en
+> words -w 6 -l en -g hangman
 ```
 
-This will run the game with 5-letter words and a user supplied dictionary.
+This will run Wordle with 6-letter words and a user supplied dictionary.
 
 ```shell
-> wp 6 /Users/word/dictionary.txt
+> words -w 6 -d /Users/word/dictionary.txt
 ```
 
 # Dictionaries
