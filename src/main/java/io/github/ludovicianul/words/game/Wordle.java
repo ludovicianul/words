@@ -17,6 +17,7 @@ public class Wordle implements Game {
 
   private final StringBuilder GUESS_MATRIX = new StringBuilder();
   private int counter = 1;
+  private final Set<Character> unmatched = new HashSet<>();
   private GameContext gameContext;
 
   private void printGuessMatrix() {
@@ -67,12 +68,15 @@ public class Wordle implements Game {
         finalPrint.append(formatResult(Ansi.Color.YELLOW, word.charAt(i)));
         GUESS_MATRIX.append(formatResult(Ansi.Color.YELLOW, ' '));
       } else {
+        unmatched.add(word.charAt(i));
         finalPrint.append(formatResult(Ansi.Color.WHITE, word.charAt(i)));
         GUESS_MATRIX.append(formatResult(Ansi.Color.WHITE, ' '));
       }
     }
     GUESS_MATRIX.append(lineSeparator());
     out.println(finalPrint);
+    out.println("Unmatched: " + Ansi.ansi().bold().fgRgb(169,169,169).a(unmatched).reset().toString());
+    out.println();
   }
 
   private int nextIndexOf(char currentChar, Set<Integer> markedIndexes) {
