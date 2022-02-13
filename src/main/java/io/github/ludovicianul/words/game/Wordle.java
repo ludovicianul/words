@@ -16,8 +16,8 @@ import static java.lang.System.*;
 public class Wordle implements Game {
 
   private final StringBuilder GUESS_MATRIX = new StringBuilder();
-  private int counter = 1;
   private final Set<Character> unmatched = new HashSet<>();
+  private int counter = 1;
   private GameContext gameContext;
 
   private void printGuessMatrix() {
@@ -36,7 +36,7 @@ public class Wordle implements Game {
 
   private boolean isValidWord(String word) {
     return word.length() == gameContext.getSelectedWord().length()
-        && gameContext.getWords().contains(word.toLowerCase(Locale.ROOT));
+        && gameContext.getWords().contains(word);
   }
 
   private boolean isGuessed(String word) {
@@ -47,8 +47,10 @@ public class Wordle implements Game {
     if (guessed) {
       printGuessMatrix();
     } else {
-      ConsoleUtil.printSelectedWorDefinition(gameContext);
+      out.println(Ansi.ansi().bold().fgYellow().a("Better luck next time!").reset());
     }
+    ConsoleUtil.printSelectedWorDefinition(
+        gameContext.getSelectedWord(), gameContext.getLanguage());
   }
 
   private void match(String word) {
@@ -75,7 +77,8 @@ public class Wordle implements Game {
     }
     GUESS_MATRIX.append(lineSeparator());
     out.println(finalPrint);
-    out.println("Unmatched: " + Ansi.ansi().bold().fgRgb(169,169,169).a(unmatched).reset().toString());
+    out.println(
+        "Unmatched: " + Ansi.ansi().bold().fgRgb(169, 169, 169).a(unmatched).reset().toString());
     out.println();
   }
 
@@ -93,17 +96,17 @@ public class Wordle implements Game {
     this.gameContext = gameContext;
     boolean guessed = false;
     int maxTries = gameContext.getSelectedWord().length() + 1;
+    Scanner scanner = new Scanner(in);
 
     while (counter <= maxTries && !guessed) {
-      Scanner scanner = new Scanner(in);
       out.printf("Attempt %s / %s: %n", counter, maxTries);
-      String word = scanner.nextLine();
+      String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       if (!isValidWord(word)) {
         out.println("Not a valid word!");
         continue;
       }
       guessed = isGuessed(word);
-      match(word.toLowerCase(Locale.ROOT));
+      match(word);
       counter++;
     }
 

@@ -28,7 +28,7 @@ import static java.lang.System.out;
     mixinStandardHelpOptions = true,
     header = "%n@|green Words version 1.1|@ %n",
     usageHelpAutoWidth = true,
-    version = "1.1",
+    version = "words 1.1",
     subcommands = {AutoComplete.GenerateCompletion.class, CommandLine.HelpCommand.class})
 @Dependent
 @Default
@@ -93,7 +93,12 @@ public class WordsCommand implements Runnable {
 
   private void loadUserProvidedDictionary() {
     try (BufferedReader reader = new BufferedReader(new FileReader(dictionary))) {
-      words = reader.lines().filter(word -> word.length() == wordSize).collect(Collectors.toList());
+      words =
+          reader
+              .lines()
+              .filter(word -> word.length() == wordSize)
+              .map(word -> word.toUpperCase(Locale.ROOT))
+              .collect(Collectors.toList());
       language = Language.USER;
     } catch (IOException e) {
       System.err.printf(
@@ -105,7 +110,12 @@ public class WordsCommand implements Runnable {
     try (InputStream wordsStream = getWordsInputStream();
         BufferedReader reader =
             new BufferedReader(new InputStreamReader(Objects.requireNonNull(wordsStream)))) {
-      words = reader.lines().filter(word -> word.length() == wordSize).collect(Collectors.toList());
+      words =
+          reader
+              .lines()
+              .filter(word -> word.length() == wordSize)
+              .map(word -> word.toUpperCase(Locale.ROOT))
+              .collect(Collectors.toList());
     }
   }
 

@@ -16,19 +16,19 @@ public class Hangman implements Game {
   private final Set<Character> unmatched = new HashSet<>();
 
   private GameContext gameContext;
-  private int tries = 0;
 
   @Override
   public void play(GameContext gameContext) {
     this.gameContext = gameContext;
     boolean guessed = false;
+    int tries = 0;
+    Scanner scanner = new Scanner(in);
 
     printState();
 
     while (tries <= MAX_TRIES && !guessed) {
-      Scanner scanner = new Scanner(in);
       out.printf("Remaining tries %s: %n", MAX_TRIES - tries);
-      String word = scanner.nextLine();
+      String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       boolean matched = matchWord(word);
       if (!matched) {
         tries++;
@@ -49,8 +49,10 @@ public class Hangman implements Game {
     if (guessed) {
       printEndState();
     } else {
-      ConsoleUtil.printSelectedWorDefinition(gameContext);
+      out.println(Ansi.ansi().bold().fgYellow().a("Better luck next time!").reset());
     }
+    ConsoleUtil.printSelectedWorDefinition(
+        gameContext.getSelectedWord(), gameContext.getLanguage());
   }
 
   private void printEndState() {

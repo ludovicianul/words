@@ -2,5 +2,6 @@ package io.github.ludovicianul.words.game;
 
 public enum GameType {
   WORDLE,
-  HANGMAN
+  HANGMAN,
+  THREE_WORDS
 }
