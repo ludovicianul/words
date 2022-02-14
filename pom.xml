@@ -140,4 +140,11 @@
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
   <version>1.0.0-SNAPSHOT</version>
+
+  <scm>
+    <url>https://ludovicianu@github.com/ludovicianul/words</url>
+    <connection>scm:git:git@github.com:ludovicianul/words.git</connection>
+    <developerConnection>scm:git:git@github.com:ludovicianul/words.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 </project>
