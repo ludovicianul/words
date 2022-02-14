@@ -12,16 +12,18 @@ import static java.lang.System.out;
 
 @Singleton
 public class ThreeWords implements Game {
-  public static final char WILD_CHAR = '•';
+  private static final char WILD_CHAR = '•';
   private static final int NO_OF_WORDS = 3;
   private static final int CHARS_TO_REMOVE = 2;
+
   private final List<String> randomWords = new ArrayList<>();
   private final List<String> obfuscatedWords = new ArrayList<>();
-  private final List<Character> removedChars = new ArrayList<>();
   private final List<List<Character>> allPermutations = new ArrayList<>();
-  private final List<Integer> generatedIndexes = new ArrayList<>();
   private final List<List<String>> allWordsCombinations = new ArrayList<>();
-  private List<Character> shuffledRemovedChars = new ArrayList<>();
+
+  private final List<Character> removedChars = new ArrayList<>();
+  private final List<Integer> removedIndexes = new ArrayList<>();
+  private final List<Character> shuffledRemovedChars = new ArrayList<>();
   private GameContext gameContext;
 
   private void generateWords() {
@@ -39,7 +41,7 @@ public class ThreeWords implements Game {
         while (word.charAt(currentIndex) == WILD_CHAR) {
           currentIndex = random.nextInt(gameContext.getSelectedWord().length());
         }
-        generatedIndexes.add(currentIndex);
+        removedIndexes.add(currentIndex);
         removedChars.add(word.charAt(currentIndex));
         word = this.replaceChar(word, currentIndex, WILD_CHAR);
       }
@@ -69,7 +71,7 @@ public class ThreeWords implements Game {
           word =
               this.replaceChar(
                   word,
-                  generatedIndexes.get(i * CHARS_TO_REMOVE + j),
+                  removedIndexes.get(i * CHARS_TO_REMOVE + j),
                   permutation.get(i * CHARS_TO_REMOVE + j));
         }
         if (gameContext.getWords().contains(word)) {
@@ -104,6 +106,7 @@ public class ThreeWords implements Game {
     List<String> guessedWords = new ArrayList<>();
     List<Character> guessedChars = new ArrayList<>();
     List<String> candidate = Collections.emptyList();
+
     Scanner scanner = new Scanner(in);
 
     while (guessedWords.size() < NO_OF_WORDS) {
@@ -171,8 +174,8 @@ public class ThreeWords implements Game {
     return characters;
   }
 
-  private void printRemovedChars() {
-    shuffledRemovedChars = new ArrayList<>(removedChars);
+  private void shuffleAndPrintRemovedLetters() {
+    shuffledRemovedChars.addAll(removedChars);
     Collections.shuffle(shuffledRemovedChars);
     System.out.println("Available letters: " + shuffledRemovedChars);
   }
@@ -184,7 +187,7 @@ public class ThreeWords implements Game {
     removeChars();
     createWordCombinations();
     printObfuscatedWords();
-    printRemovedChars();
+    shuffleAndPrintRemovedLetters();
     startGame();
   }
 

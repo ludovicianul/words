@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class WordDefinition {
-
   public static String getDefinition(String word, Language language) {
     if (language == Language.EN) {
       return getEnglishDef(word);
@@ -43,7 +42,8 @@ public final class WordDefinition {
 
   private static String doGet(String url)
       throws URISyntaxException, IOException, InterruptedException {
-    HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
+    HttpClient httpClient =
+        HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
     HttpRequest request =
         HttpRequest.newBuilder()
             .uri(new URI(url))
@@ -52,7 +52,7 @@ public final class WordDefinition {
             .GET()
             .build();
     HttpResponse<String> response =
-        client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
     return response.body();
   }
 

@@ -33,9 +33,7 @@ public class Hangman implements Game {
       if (!matched) {
         tries++;
       }
-      if (marked.size() == gameContext.getSelectedWord().length() || isGuessed(word)) {
-        guessed = true;
-      }
+      guessed = marked.size() == gameContext.getSelectedWord().length() || isGuessed(word);
 
       if (!guessed) {
         printState();
