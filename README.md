@@ -4,7 +4,7 @@
 Each game has multiple dictionaries and word lengths. With `Words` you will also learn new words.At the end of each game you will get its short definition as well as a link to more detailed explanations.
 
 <p  align="center">
-  <img src="images/all_games.png" width="50%"  />
+  <img src="images/all_games.png" />
 </p>
 
 # Use
