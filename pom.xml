@@ -143,8 +143,8 @@
 
   <scm>
     <url>https://ludovicianu@github.com/ludovicianul/words</url>
-    <connection>https://github.com/ludovicianul/words.git</connection>
-    <developerConnection>https://github.com/ludovicianul/words.git</developerConnection>
+    <connection>scm:git:https://github.com/ludovicianul/words.git</connection>
+    <developerConnection>scm:git:https://github.com/ludovicianul/words.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 </project>
