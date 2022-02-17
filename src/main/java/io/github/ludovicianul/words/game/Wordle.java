@@ -34,15 +34,6 @@ public class Wordle implements Game {
     out.println(GUESS_MATRIX);
   }
 
-  private boolean isValidWord(String word) {
-    return word.length() == gameContext.getSelectedWord().length()
-        && gameContext.getWords().contains(word);
-  }
-
-  private boolean isGuessed(String word) {
-    return gameContext.getSelectedWord().equalsIgnoreCase(word);
-  }
-
   private void finishGame(boolean guessed) {
     if (guessed) {
       printGuessMatrix();
@@ -101,11 +92,11 @@ public class Wordle implements Game {
     while (counter <= maxTries && !guessed) {
       out.printf("Attempt %s / %s: %n", counter, maxTries);
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
-      if (!isValidWord(word)) {
+      if (!gameContext.isValidWord(word)) {
         out.println("Not a valid word!");
         continue;
       }
-      guessed = isGuessed(word);
+      guessed = gameContext.isGuessed(word);
       match(word);
       counter++;
     }
@@ -117,4 +108,7 @@ public class Wordle implements Game {
   public GameType gameType() {
     return GameType.WORDLE;
   }
+
+  @Override
+  public void saveState() {}
 }

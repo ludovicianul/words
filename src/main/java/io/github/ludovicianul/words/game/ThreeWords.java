@@ -14,7 +14,6 @@ import static java.lang.System.out;
 public class ThreeWords implements Game {
   private static final char WILD_CHAR = '•';
   private static final int NO_OF_WORDS = 3;
-  private static final int CHARS_TO_REMOVE = 2;
 
   private final List<String> randomWords = new ArrayList<>();
   private final List<String> obfuscatedWords = new ArrayList<>();
@@ -36,7 +35,7 @@ public class ThreeWords implements Game {
   private void removeChars() {
     SecureRandom random = new SecureRandom();
     for (String word : randomWords) {
-      for (int i = 0; i < CHARS_TO_REMOVE; i++) {
+      for (int i = 0; i < gameContext.getRemovedLetters(); i++) {
         int currentIndex = random.nextInt(gameContext.getSelectedWord().length());
         while (word.charAt(currentIndex) == WILD_CHAR) {
           currentIndex = random.nextInt(gameContext.getSelectedWord().length());
@@ -67,12 +66,12 @@ public class ThreeWords implements Game {
       List<String> candidate = new ArrayList<>();
       for (int i = 0; i < NO_OF_WORDS; i++) {
         String word = obfuscatedWords.get(i);
-        for (int j = 0; j < CHARS_TO_REMOVE; j++) {
+        for (int j = 0; j < gameContext.getRemovedLetters(); j++) {
           word =
               this.replaceChar(
                   word,
-                  removedIndexes.get(i * CHARS_TO_REMOVE + j),
-                  permutation.get(i * CHARS_TO_REMOVE + j));
+                  removedIndexes.get(i * gameContext.getRemovedLetters() + j),
+                  permutation.get(i * gameContext.getRemovedLetters() + j));
         }
         if (gameContext.getWords().contains(word)) {
           candidate.add(word);
@@ -153,7 +152,8 @@ public class ThreeWords implements Game {
     for (Character character : guessedChars) {
       remaining.remove(character);
     }
-    out.println("Remaining letters: " + remaining);
+    out.println(
+        "Remaining letters: " + Ansi.ansi().bold().fgRgb(169, 169, 169).a(remaining).reset());
   }
 
   private void printState(List<String> guessedAndObfuscated) {
@@ -168,8 +168,8 @@ public class ThreeWords implements Game {
 
   private List<Character> getGuessedChars(int index) {
     List<Character> characters = new ArrayList<>();
-    for (int i = 0; i < CHARS_TO_REMOVE; i++) {
-      characters.add(removedChars.get(index * CHARS_TO_REMOVE + i));
+    for (int i = 0; i < gameContext.getRemovedLetters(); i++) {
+      characters.add(removedChars.get(index * gameContext.getRemovedLetters() + i));
     }
     return characters;
   }
@@ -177,7 +177,9 @@ public class ThreeWords implements Game {
   private void shuffleAndPrintRemovedLetters() {
     shuffledRemovedChars.addAll(removedChars);
     Collections.shuffle(shuffledRemovedChars);
-    System.out.println("Available letters: " + shuffledRemovedChars);
+    System.out.println(
+        "Available letters: "
+            + Ansi.ansi().bold().fgRgb(169, 169, 169).a(shuffledRemovedChars).reset());
   }
 
   @Override
@@ -195,4 +197,7 @@ public class ThreeWords implements Game {
   public GameType gameType() {
     return GameType.THREE_WORDS;
   }
+
+  @Override
+  public void saveState() {}
 }

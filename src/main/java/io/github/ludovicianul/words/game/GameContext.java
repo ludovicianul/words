@@ -9,6 +9,16 @@ public class GameContext {
   private List<String> words;
   private String selectedWord;
   private Language language;
+  private int removedLetters;
+
+  public int getRemovedLetters() {
+    return removedLetters;
+  }
+
+  public GameContext removedLetters(int removedLetters) {
+    this.removedLetters = removedLetters;
+    return this;
+  }
 
   public Language getLanguage() {
     return language;
@@ -35,5 +45,13 @@ public class GameContext {
   public GameContext selectedWord(String selectedWord) {
     this.selectedWord = selectedWord;
     return this;
+  }
+
+  public boolean isGuessed(String word) {
+    return selectedWord.equalsIgnoreCase(word);
+  }
+
+  public boolean isValidWord(String word) {
+    return word.length() == selectedWord.length() && words.contains(word);
   }
 }

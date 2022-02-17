@@ -33,7 +33,8 @@ public class Hangman implements Game {
       if (!matched) {
         tries++;
       }
-      guessed = marked.size() == gameContext.getSelectedWord().length() || isGuessed(word);
+      guessed =
+          marked.size() == gameContext.getSelectedWord().length() || gameContext.isGuessed(word);
 
       if (!guessed) {
         printState();
@@ -83,7 +84,7 @@ public class Hangman implements Game {
       }
     }
     builder.append(lineSeparator());
-    builder.append(Ansi.ansi().fgYellow().a("Unmatched: ").bold().a(unmatched).reset());
+    builder.append(Ansi.ansi().a("Unmatched: ").bold().fgRgb(169, 169, 169).a(unmatched).reset());
     builder.append(lineSeparator());
     out.println(builder);
   }
@@ -102,17 +103,16 @@ public class Hangman implements Game {
         unmatched.add(input);
       }
     } else {
-      matched = isGuessed(word);
+      matched = gameContext.isGuessed(word);
     }
     return matched;
-  }
-
-  private boolean isGuessed(String word) {
-    return word.equalsIgnoreCase(gameContext.getSelectedWord());
   }
 
   @Override
   public GameType gameType() {
     return GameType.HANGMAN;
   }
+
+  @Override
+  public void saveState() {}
 }

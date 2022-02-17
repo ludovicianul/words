@@ -3,20 +3,22 @@ package io.github.ludovicianul.words;
 import io.github.ludovicianul.words.cli.WordsCommand;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
-import javax.inject.Inject;
 import picocli.CommandLine;
+
+import javax.inject.Inject;
 
 @QuarkusMain
 public class WordsMain implements QuarkusApplication {
 
-  @Inject
-  WordsCommand wordsCommand;
+  @Inject WordsCommand wordsCommand;
 
-  @Inject
-  CommandLine.IFactory factory;
+  @Inject CommandLine.IFactory factory;
 
   @Override
   public int run(String... args) {
+    var shutdownListener = new Thread(() -> wordsCommand.saveStats());
+    Runtime.getRuntime().addShutdownHook(shutdownListener);
+
     return new CommandLine(wordsCommand, factory)
         .setCaseInsensitiveEnumValuesAllowed(true)
         .execute(args);

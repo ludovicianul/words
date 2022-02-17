@@ -5,4 +5,6 @@ public interface Game {
   void play(GameContext gameContext);
 
   GameType gameType();
+
+  void saveState();
 }

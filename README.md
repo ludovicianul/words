@@ -17,7 +17,7 @@ You can also add `words` to PATH so that you have it available at any time. Exam
 ```
 
 # Running the game
-`Words` has (currently) 3 built-in games: Wordle, Hangman and Three_Words. Each of these games have 2 built-in dictionaries: English and Romanian. The games can be played with words length between 4 and 15.
+`Words` has (currently) 3 built-in games: Wordle, Hangman, Three_Words and Jotto. Each of these games have 2 built-in dictionaries: English and Romanian. The games can be played with words length between 4 and 15.
 
 ```shell
 words -w [letters] -l [language] -d [user_dictionary] -g [game]
@@ -54,6 +54,9 @@ Based on Hangman gameplay: [https://en.wikipedia.org/wiki/Hangman_(game)](https:
 # Playing Three_Words
 For this one you are given 3 words. From each word a number of letters have been removed (we call these words obfuscated) and added to a single shuffled set (available letters).
 The objective is to reconstruct those initial 3 words. The game accepts any combination that can be made using the obfuscated words and available letters.
+
+# Playing Jotto
+Based on Jotto gameplay: [http://www.panix.com/~sos/bc/jotto.html](http://www.panix.com/~sos/bc/jotto.html)
 
 # Dictionaries
 English dictionary used: [https://www.wordgamedictionary.com/sowpods/download/sowpods.txt](https://www.wordgamedictionary.com/sowpods/download/sowpods.txt).

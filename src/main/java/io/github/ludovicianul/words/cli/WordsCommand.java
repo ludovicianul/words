@@ -59,6 +59,14 @@ public class WordsCommand implements Runnable {
       description = "The game to play. Default: ${DEFAULT-VALUE}")
   private GameType game = GameType.WORDLE;
 
+  @CommandLine.Option(
+      names = {"-r", "--lettersRemoved"},
+      description =
+          "The number of letters to remove. Has effect only when playing THREE_WORDS. Default: ${DEFAULT-VALUE}")
+  private int lettersRmoved = 2;
+
+  private Game selectedGame;
+
   private InputStream getWordsInputStream() {
     InputStream wordsStream =
         Thread.currentThread()
@@ -134,15 +142,25 @@ public class WordsCommand implements Runnable {
 
   private void startGame() {
     GameContext context = new GameContext();
-    context.words(words).selectedWord(selectedWord).language(language);
-    games.stream()
-        .filter(currentGame -> currentGame.gameType() == game)
-        .findFirst()
-        .orElseThrow(
-            () -> {
-              throw new IllegalArgumentException("Game does not exist!");
-            })
-        .play(context);
+    context
+        .words(words)
+        .selectedWord(selectedWord)
+        .language(language)
+        .removedLetters(lettersRmoved);
+    selectedGame =
+        games.stream()
+            .filter(currentGame -> currentGame.gameType() == game)
+            .findFirst()
+            .orElseThrow(
+                () -> {
+                  throw new IllegalArgumentException("Game does not exist!");
+                });
+    selectedGame.play(context);
+  }
+
+  public void saveStats() {
+    out.println("Saving stats...");
+    selectedGame.saveState();
   }
 
   @Override
