@@ -16,9 +16,6 @@ public class WordsMain implements QuarkusApplication {
 
   @Override
   public int run(String... args) {
-    var shutdownListener = new Thread(() -> wordsCommand.saveStats());
-    Runtime.getRuntime().addShutdownHook(shutdownListener);
-
     return new CommandLine(wordsCommand, factory)
         .setCaseInsensitiveEnumValuesAllowed(true)
         .execute(args);

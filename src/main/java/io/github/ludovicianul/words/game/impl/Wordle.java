@@ -1,5 +1,9 @@
-package io.github.ludovicianul.words.game;
+package io.github.ludovicianul.words.game.impl;
 
+import io.github.ludovicianul.words.game.Game;
+import io.github.ludovicianul.words.game.GameContext;
+import io.github.ludovicianul.words.game.GameOutcome;
+import io.github.ludovicianul.words.game.GameType;
 import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 
@@ -17,8 +21,9 @@ public class Wordle implements Game {
 
   private final StringBuilder GUESS_MATRIX = new StringBuilder();
   private final Set<Character> unmatched = new HashSet<>();
-  private int counter = 1;
+  private int attempts = 1;
   private GameContext gameContext;
+  private GameOutcome gameOutcome;
 
   private void printGuessMatrix() {
     String sequenceFormat =
@@ -36,8 +41,10 @@ public class Wordle implements Game {
 
   private void finishGame(boolean guessed) {
     if (guessed) {
+      gameOutcome = GameOutcome.SUCCESS;
       printGuessMatrix();
     } else {
+      gameOutcome = GameOutcome.FAIL;
       out.println(Ansi.ansi().bold().fgYellow().a("Better luck next time!").reset());
     }
     ConsoleUtil.printSelectedWorDefinition(
@@ -89,8 +96,8 @@ public class Wordle implements Game {
     int maxTries = gameContext.getSelectedWord().length() + 1;
     Scanner scanner = new Scanner(in);
 
-    while (counter <= maxTries && !guessed) {
-      out.printf("Attempt %s / %s: %n", counter, maxTries);
+    while (attempts <= maxTries && !guessed) {
+      out.printf("Attempt %s / %s: %n", attempts, maxTries);
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       if (!gameContext.isValidWord(word)) {
         out.println("Not a valid word!");
@@ -98,7 +105,7 @@ public class Wordle implements Game {
       }
       guessed = gameContext.isGuessed(word);
       match(word);
-      counter++;
+      attempts++;
     }
 
     finishGame(guessed);
@@ -110,5 +117,12 @@ public class Wordle implements Game {
   }
 
   @Override
-  public void saveState() {}
+  public int getAttempts() {
+    return attempts - 1;
+  }
+
+  @Override
+  public GameOutcome outcome() {
+    return gameOutcome;
+  }
 }

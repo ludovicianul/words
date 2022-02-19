@@ -1,9 +1,13 @@
 package io.github.ludovicianul.words.cli;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.github.ludovicianul.words.definition.Language;
 import io.github.ludovicianul.words.game.Game;
 import io.github.ludovicianul.words.game.GameContext;
 import io.github.ludovicianul.words.game.GameType;
+import io.github.ludovicianul.words.game.stats.Stats;
+import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 import picocli.AutoComplete;
 import picocli.CommandLine;
@@ -13,15 +17,15 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.System.err;
-import static java.lang.System.out;
+import static java.lang.System.*;
 
 @CommandLine.Command(
     name = "words",
@@ -29,7 +33,11 @@ import static java.lang.System.out;
     header = "%n@|green Words version 1.1|@ %n",
     usageHelpAutoWidth = true,
     version = "words 1.1",
-    subcommands = {AutoComplete.GenerateCompletion.class, CommandLine.HelpCommand.class})
+    subcommands = {
+      AutoComplete.GenerateCompletion.class,
+      CommandLine.HelpCommand.class,
+      StatsCommand.class
+    })
 @Dependent
 @Default
 public class WordsCommand implements Runnable {
@@ -66,6 +74,8 @@ public class WordsCommand implements Runnable {
   private int lettersRmoved = 2;
 
   private Game selectedGame;
+  private Set<Stats> existingAllGamesStats;
+  private long startTime;
 
   private InputStream getWordsInputStream() {
     InputStream wordsStream =
@@ -141,12 +151,13 @@ public class WordsCommand implements Runnable {
   }
 
   private void startGame() {
-    GameContext context = new GameContext();
-    context
-        .words(words)
-        .selectedWord(selectedWord)
-        .language(language)
-        .removedLetters(lettersRmoved);
+    startTime = currentTimeMillis();
+    GameContext context =
+        new GameContext()
+            .words(words)
+            .selectedWord(selectedWord)
+            .language(language)
+            .removedLetters(lettersRmoved);
     selectedGame =
         games.stream()
             .filter(currentGame -> currentGame.gameType() == game)
@@ -158,18 +169,83 @@ public class WordsCommand implements Runnable {
     selectedGame.play(context);
   }
 
-  public void saveStats() {
-    out.println("Saving stats...");
-    selectedGame.saveState();
+  public void loadStats() throws IOException {
+    String userDir = System.getProperty("user.home");
+    Path words = Paths.get(userDir, ".words");
+    if (!words.toFile().exists()) {
+      Files.createDirectories(words);
+    }
+    File statsFile = new File(words.toFile().getAbsolutePath(), "stats.json");
+    if (!statsFile.exists() && !statsFile.createNewFile()) {
+      err.println(
+          "Something went wrong while creating the stats.json file at "
+              + statsFile.getAbsolutePath());
+    }
+    Type statsType = new TypeToken<HashSet<Stats>>() {}.getType();
+
+    existingAllGamesStats = new Gson().fromJson(Files.readString(statsFile.toPath()), statsType);
+    if (existingAllGamesStats == null) {
+      existingAllGamesStats = new HashSet<>();
+    }
+  }
+
+  private void finishGame() throws IOException {
+    long gameTime = (System.currentTimeMillis() - startTime) / 1000;
+    int moves = selectedGame.getAttempts();
+
+    Stats existingGameStats = this.getExistingGameStatsForSelectedGame(gameTime, moves);
+
+    existingGameStats.increaseTotal();
+    existingGameStats.increaseFails(selectedGame.outcome());
+    boolean bestMovesUpdated = existingGameStats.updateBestMoves(moves);
+    boolean bestTimeUpdated = existingGameStats.updateBestTime(gameTime);
+
+    this.writeGameStats(existingGameStats);
+    out.println();
+    if (bestMovesUpdated | bestTimeUpdated) {
+      out.println(Ansi.ansi().fgBlue().bold().a("New High Score!").reset());
+    }
+    ConsoleUtil.printStats(
+        existingAllGamesStats.stream()
+            .filter(stats -> stats.getGameType() == selectedGame.gameType())
+            .collect(Collectors.toSet()));
+  }
+
+  private void writeGameStats(Stats existingGameStats) throws IOException {
+    existingAllGamesStats.add(existingGameStats);
+    Files.writeString(
+        Paths.get(System.getProperty("user.home"), ".words", "stats.json"),
+        new Gson().toJson(existingAllGamesStats));
+  }
+
+  private Stats getExistingGameStatsForSelectedGame(long gameTime, int moves) {
+    return existingAllGamesStats.stream()
+        .filter(
+            stats ->
+                stats.getGameType() == selectedGame.gameType()
+                    && stats.getLanguage() == language
+                    && stats.getWordLength() == wordSize)
+        .findFirst()
+        .orElse(
+            new Stats()
+                .bestMoves(moves)
+                .bestTime(gameTime)
+                .total(0)
+                .fails(0)
+                .gameType(selectedGame.gameType())
+                .language(language)
+                .wordLength(wordSize));
   }
 
   @Override
   public void run() {
     try {
+      loadStats();
       setWordSize();
       loadWords();
       selectWord();
       startGame();
+      finishGame();
     } catch (Exception e) {
       err.println("There was a problem starting the game: " + e.getMessage());
     }

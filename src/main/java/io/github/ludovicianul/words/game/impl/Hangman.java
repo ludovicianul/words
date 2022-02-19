@@ -1,5 +1,9 @@
-package io.github.ludovicianul.words.game;
+package io.github.ludovicianul.words.game.impl;
 
+import io.github.ludovicianul.words.game.Game;
+import io.github.ludovicianul.words.game.GameContext;
+import io.github.ludovicianul.words.game.GameOutcome;
+import io.github.ludovicianul.words.game.GameType;
 import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 
@@ -16,22 +20,23 @@ public class Hangman implements Game {
   private final Set<Character> unmatched = new HashSet<>();
 
   private GameContext gameContext;
+  private GameOutcome gameOutcome;
+  private int attempts;
 
   @Override
   public void play(GameContext gameContext) {
     this.gameContext = gameContext;
     boolean guessed = false;
-    int tries = 0;
     Scanner scanner = new Scanner(in);
 
     printState();
 
-    while (tries <= MAX_TRIES && !guessed) {
-      out.printf("Remaining tries %s: %n", MAX_TRIES - tries);
+    while (attempts <= MAX_TRIES && !guessed) {
+      out.printf("Remaining tries %s: %n", MAX_TRIES - attempts);
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       boolean matched = matchWord(word);
       if (!matched) {
-        tries++;
+        attempts++;
       }
       guessed =
           marked.size() == gameContext.getSelectedWord().length() || gameContext.isGuessed(word);
@@ -46,8 +51,10 @@ public class Hangman implements Game {
 
   private void finishGame(boolean guessed) {
     if (guessed) {
+      gameOutcome = GameOutcome.SUCCESS;
       printEndState();
     } else {
+      gameOutcome = GameOutcome.FAIL;
       out.println(Ansi.ansi().bold().fgYellow().a("Better luck next time!").reset());
     }
     ConsoleUtil.printSelectedWorDefinition(
@@ -114,5 +121,12 @@ public class Hangman implements Game {
   }
 
   @Override
-  public void saveState() {}
+  public int getAttempts() {
+    return attempts + 1;
+  }
+
+  @Override
+  public GameOutcome outcome() {
+    return gameOutcome;
+  }
 }

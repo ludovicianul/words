@@ -1,5 +1,9 @@
-package io.github.ludovicianul.words.game;
+package io.github.ludovicianul.words.game.impl;
 
+import io.github.ludovicianul.words.game.Game;
+import io.github.ludovicianul.words.game.GameContext;
+import io.github.ludovicianul.words.game.GameOutcome;
+import io.github.ludovicianul.words.game.GameType;
 import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 
@@ -14,14 +18,15 @@ import static java.lang.System.out;
 public class Jotto implements Game {
   private final StringBuilder gameState = new StringBuilder();
   private GameContext gameContext;
+  private GameOutcome gameOutcome;
+  private int attempts;
 
   private void startGame() {
     Scanner scanner = new Scanner(System.in);
     boolean guessed = false;
-    int attemtps = 0;
     while (!guessed) {
-      attemtps++;
-      out.printf("Enter you guess. Attempt %s: %n", attemtps);
+      attempts++;
+      out.printf("Enter you guess. Attempt %s: %n", attempts);
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       if (!gameContext.isValidWord(word)) {
         out.println("Not a valid word!");
@@ -36,6 +41,7 @@ public class Jotto implements Game {
   }
 
   private void finishGame() {
+    gameOutcome = GameOutcome.SUCCESS;
     out.println(lineSeparator());
     out.println("Congrats! Guessed word:");
     out.println(ConsoleUtil.formatString(gameContext.getSelectedWord(), Ansi.Color.GREEN));
@@ -68,5 +74,12 @@ public class Jotto implements Game {
   }
 
   @Override
-  public void saveState() {}
+  public int getAttempts() {
+    return attempts;
+  }
+
+  @Override
+  public GameOutcome outcome() {
+    return gameOutcome;
+  }
 }

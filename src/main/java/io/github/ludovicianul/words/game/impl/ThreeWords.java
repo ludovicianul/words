@@ -1,5 +1,9 @@
-package io.github.ludovicianul.words.game;
+package io.github.ludovicianul.words.game.impl;
 
+import io.github.ludovicianul.words.game.Game;
+import io.github.ludovicianul.words.game.GameContext;
+import io.github.ludovicianul.words.game.GameOutcome;
+import io.github.ludovicianul.words.game.GameType;
 import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 
@@ -24,6 +28,8 @@ public class ThreeWords implements Game {
   private final List<Integer> removedIndexes = new ArrayList<>();
   private final List<Character> shuffledRemovedChars = new ArrayList<>();
   private GameContext gameContext;
+  private GameOutcome gameOutcome;
+  private int attempts;
 
   private void generateWords() {
     SecureRandom random = new SecureRandom();
@@ -109,6 +115,7 @@ public class ThreeWords implements Game {
     Scanner scanner = new Scanner(in);
 
     while (guessedWords.size() < NO_OF_WORDS) {
+      attempts++;
       out.println("Enter your guess: ");
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       Optional<List<String>> possibleCandidate =
@@ -135,6 +142,7 @@ public class ThreeWords implements Game {
   }
 
   private void finishGame(long startTime, List<String> candidate) {
+    gameOutcome = GameOutcome.SUCCESS;
     out.println(
         Ansi.ansi()
             .bold()
@@ -199,5 +207,12 @@ public class ThreeWords implements Game {
   }
 
   @Override
-  public void saveState() {}
+  public int getAttempts() {
+    return attempts;
+  }
+
+  @Override
+  public GameOutcome outcome() {
+    return gameOutcome;
+  }
 }

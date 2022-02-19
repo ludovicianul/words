@@ -6,5 +6,7 @@ public interface Game {
 
   GameType gameType();
 
-  void saveState();
+  int getAttempts();
+
+  GameOutcome outcome();
 }
