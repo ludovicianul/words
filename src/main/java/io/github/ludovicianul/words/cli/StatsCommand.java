@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @CommandLine.Command(
+    mixinStandardHelpOptions = true,
     name = "stats",
     version = "stats 1.1",
     description = "Display high scores for each game")
