@@ -30,9 +30,9 @@ import static java.lang.System.*;
 @CommandLine.Command(
     name = "words",
     mixinStandardHelpOptions = true,
-    header = "%n@|green Words version 1.1|@ %n",
+    header = "%n@|green Words version 1.2|@ %n",
     usageHelpAutoWidth = true,
-    version = "words 1.1",
+    version = "words 1.2",
     subcommands = {
       AutoComplete.GenerateCompletion.class,
       CommandLine.HelpCommand.class,
