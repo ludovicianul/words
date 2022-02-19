@@ -8,6 +8,7 @@ import io.github.ludovicianul.words.game.GameContext;
 import io.github.ludovicianul.words.game.GameType;
 import io.github.ludovicianul.words.game.stats.Stats;
 import io.github.ludovicianul.words.game.util.ConsoleUtil;
+import io.github.ludovicianul.words.game.util.FileUtils;
 import org.fusesource.jansi.Ansi;
 import picocli.AutoComplete;
 import picocli.CommandLine;
@@ -16,7 +17,10 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +40,10 @@ import static java.lang.System.*;
     subcommands = {
       AutoComplete.GenerateCompletion.class,
       CommandLine.HelpCommand.class,
-      StatsCommand.class
+      StatsCommand.class,
+      GamesCommand.class,
+      DictionariesCommand.class,
+      CheckWordsCommand.class
     })
 @Dependent
 @Default
@@ -77,18 +84,6 @@ public class WordsCommand implements Runnable {
   private Set<Stats> existingAllGamesStats;
   private long startTime;
 
-  private InputStream getWordsInputStream() {
-    InputStream wordsStream =
-        Thread.currentThread()
-            .getContextClassLoader()
-            .getResourceAsStream("words_" + language.name().toLowerCase(Locale.ROOT) + ".txt");
-    if (wordsStream == null) {
-      wordsStream =
-          Thread.currentThread().getContextClassLoader().getResourceAsStream("words_en.txt");
-    }
-    return wordsStream;
-  }
-
   private void loadWords() throws IOException {
     if (dictionary != null) {
       loadUserProvidedDictionary();
@@ -125,16 +120,11 @@ public class WordsCommand implements Runnable {
   }
 
   private void loadBuiltInDictionary() throws IOException {
-    try (InputStream wordsStream = getWordsInputStream();
-        BufferedReader reader =
-            new BufferedReader(new InputStreamReader(Objects.requireNonNull(wordsStream)))) {
-      words =
-          reader
-              .lines()
-              .filter(word -> word.length() == wordSize)
-              .map(word -> word.toUpperCase(Locale.ROOT))
-              .collect(Collectors.toList());
-    }
+    words =
+        FileUtils.loadBuiltInDictionary(language).stream()
+            .filter(word -> word.length() == wordSize)
+            .map(word -> word.toUpperCase(Locale.ROOT))
+            .collect(Collectors.toList());
   }
 
   private void selectWord() {
