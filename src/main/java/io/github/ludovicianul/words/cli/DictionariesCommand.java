@@ -6,7 +6,7 @@ import org.fusesource.jansi.Ansi;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 @CommandLine.Command(
     mixinStandardHelpOptions = true,
@@ -24,7 +24,7 @@ public class DictionariesCommand implements Runnable {
       System.out.println("Available dictionaries:");
       for (Language language : Language.values()) {
         if (language != Language.USER) {
-          List<String> words = FileUtils.loadBuiltInDictionary(language);
+          Collection<String> words = FileUtils.loadBuiltInDictionary(language);
           System.out.println(
               Ansi.ansi()
                   .bold()
