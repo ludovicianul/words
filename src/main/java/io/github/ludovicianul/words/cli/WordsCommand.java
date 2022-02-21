@@ -43,7 +43,8 @@ import static java.lang.System.*;
       StatsCommand.class,
       GamesCommand.class,
       DictionariesCommand.class,
-      CheckWordsCommand.class
+      CheckWordsCommand.class,
+      DefCommand.class
     })
 @Dependent
 @Default
