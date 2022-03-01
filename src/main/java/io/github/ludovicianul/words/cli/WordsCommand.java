@@ -25,8 +25,8 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static java.lang.System.*;
@@ -129,8 +129,7 @@ public class WordsCommand implements Runnable {
   }
 
   private void selectWord() {
-    SecureRandom random = new SecureRandom();
-    int item = random.nextInt(words.size());
+    int item = ThreadLocalRandom.current().nextInt(words.size());
     selectedWord = words.get(item);
   }
 

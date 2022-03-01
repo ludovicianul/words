@@ -13,9 +13,9 @@ import static java.lang.System.out;
 public abstract class ConsoleUtil {
 
   private static final String STATS_LINE =
-      " ------------------------------------------------------------ ";
+      "+------------------------------------------------------------+";
   private static final String STATS_HEADER =
-      "| Game        | Letters | Total | Lost | Attempts | Time     |";
+      "| Game        | Letters | Total | Lost | Best Att | Fastest  |";
   private static final String STATS_ROW = "| %-12s| %-8s| %-6s| %-5s| %-9s| %-9s|";
 
   public static void printStats(Set<Stats> statsList) {

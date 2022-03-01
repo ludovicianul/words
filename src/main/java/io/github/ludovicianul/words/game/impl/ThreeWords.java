@@ -8,8 +8,8 @@ import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 
 import javax.inject.Singleton;
-import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.System.in;
 import static java.lang.System.out;
@@ -32,19 +32,22 @@ public class ThreeWords implements Game {
   private int attempts;
 
   private void generateWords() {
-    SecureRandom random = new SecureRandom();
     for (int i = 0; i < NO_OF_WORDS; i++) {
-      randomWords.add(gameContext.getWords().get(random.nextInt(gameContext.getWords().size())));
+      randomWords.add(
+          gameContext
+              .getWords()
+              .get(ThreadLocalRandom.current().nextInt(gameContext.getWords().size())));
     }
   }
 
   private void removeChars() {
-    SecureRandom random = new SecureRandom();
     for (String word : randomWords) {
       for (int i = 0; i < gameContext.getRemovedLetters(); i++) {
-        int currentIndex = random.nextInt(gameContext.getSelectedWord().length());
+        int currentIndex =
+            ThreadLocalRandom.current().nextInt(gameContext.getSelectedWord().length());
         while (word.charAt(currentIndex) == WILD_CHAR) {
-          currentIndex = random.nextInt(gameContext.getSelectedWord().length());
+          currentIndex =
+              ThreadLocalRandom.current().nextInt(gameContext.getSelectedWord().length());
         }
         removedIndexes.add(currentIndex);
         removedChars.add(word.charAt(currentIndex));

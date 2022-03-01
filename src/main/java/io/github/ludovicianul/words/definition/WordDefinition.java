@@ -27,6 +27,7 @@ public final class WordDefinition {
   }
 
   private static String getEnglishDef(String word) {
+    word = htmlEscape(word);
     String wordUrl = "https://www.dictionary.com/browse/" + word;
     try {
       Document document = Jsoup.parse(doGet(wordUrl));
@@ -58,6 +59,7 @@ public final class WordDefinition {
 
   private static String getRomanianDef(String word) {
     try {
+      word = htmlEscape(word);
       List<String> results = new ArrayList<>();
       String definition =
           JsonPath.parse(doGet("https://dexonline.ro/definitie/" + word + "/json"))
@@ -68,5 +70,9 @@ public final class WordDefinition {
     } catch (Exception e) {
       return "could not retrieve definition";
     }
+  }
+
+  private static String htmlEscape(String string) {
+    return string.replace(" ", "%20");
   }
 }
