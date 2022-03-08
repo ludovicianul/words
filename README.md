@@ -1,13 +1,14 @@
 # Words
-`Words` is a set of command line word-based puzzle games. Best way to spend those minutes within the CLI while your builds are running ;).  
+`Words` is a set of command line word-based puzzle games. Best way to spend those minutes within the CLI while your build is running ;).  
 
-Each game has multiple dictionaries and word lengths. With `Words` you will also learn new words.At the end of each game you will get its short definition as well as a link to more detailed explanations.
+But `Words` is more than that. It has a set of built-in utilities which can help get better at games: you can check solution candidates based on regexes, 
+get word definitions or even learn random words each day.
 
 <p  align="center">
   <img src="images/all_games.png" />
 </p>
 
-# Use
+# Install
 Download the native binary for your platform from the releases page: [https://github.com/ludovicianul/words/releases](https://github.com/ludovicianul/words/releases).
 
 You can also add `words` to PATH so that you have it available at any time. Example for macOS:
@@ -16,8 +17,9 @@ You can also add `words` to PATH so that you have it available at any time. Exam
 > cp words-macos /usr/local/bin/words
 ```
 
-# Running the game
-`Words` has (currently) 3 built-in games: Wordle, Hangman, Three_Words and Jotto. Each of these games have 2 built-in dictionaries: English and Romanian. The games can be played with words length between 4 and 15.
+# Playing a game
+`Words` has (currently) 4 built-in games: Wordle, Hangman, Three_Words and Jotto. Each of these games have 3 built-in dictionaries: English, Romanian and Romanian extended. 
+The games can be played with words length between 4 and 15.
 
 ```shell
 words -w [letters] -l [language] -d [user_dictionary] -g [game]
@@ -62,3 +64,49 @@ Based on Jotto gameplay: [http://www.panix.com/~sos/bc/jotto.html](http://www.pa
 English dictionary used: [https://www.wordgamedictionary.com/sowpods/download/sowpods.txt](https://www.wordgamedictionary.com/sowpods/download/sowpods.txt).
 
 Romanian dictionary used: [https://dexonline.ro/scrabble](https://dexonline.ro/scrabble).
+
+# Additional commands
+
+```shell
+Usage: words [-hV] [-d=<dictionary>] [-g=<game>] [-l=<language>] [-r=<lettersRmoved>] [-w=<wordSize>] [COMMAND]
+  -d, --dictionary=<dictionary>
+                      User provided dictionary
+  -g, --game=<game>   The game to play. Default: WORDLE
+  -h, --help          Show this help message and exit.
+  -l, --language=<language>
+                      Language of the dictionary to be used. Default: EN
+  -r, --lettersRemoved=<lettersRmoved>
+                      The number of letters to remove. Has effect only when playing THREE_WORDS. Default: 2
+  -V, --version       Print version information and exit.
+  -w, --word-size=<wordSize>
+                      The size of the selected words. Default: 5
+Commands:
+  generate-completion  Generate bash/zsh completion script for words.
+  help                 Displays help information about the specified command
+  stats                Display high scores for each game
+  games                Display available games
+  dictionaries         Display builtin dictionaries and number of words
+  check                Check if the given word is valid or display a list of words matching given regex
+  def                  Display the definition of the given word
+
+```
+
+## Examples
+
+Check all possible 5-length words starting with `s` and ending with `t` for English.
+    
+```shell
+words check -l en -r "s...w"
+
+The following words are matching the given regex: [sprew, squaw, strew, straw, strow, scraw, screw, scrow, serow, sybow, shrew, shrow, sinew]
+```
+
+Get a new random word definition for Romanian.
+
+```shell
+words def -r -l ro
+
+ nostimada - NOSTIMÁDĂ, nostimade, s. f. Lucru, întâmplare, glumă etc. plină de haz sau caraghioasă. * Loc. adj. De toată nostimada = foarte nostim, plin de haz. - Din ngr. nostimádha. >> https://dexonline.ro/definitie/nostimada
+
+```
+
