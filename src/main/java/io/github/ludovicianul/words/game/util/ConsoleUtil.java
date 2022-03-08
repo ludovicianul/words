@@ -18,6 +18,12 @@ public abstract class ConsoleUtil {
       "| Game        | Letters | Total | Lost | Best Att | Fastest  |";
   private static final String STATS_ROW = "| %-12s| %-8s| %-6s| %-5s| %-9s| %-9s|";
 
+  public static void newLines(int number) {
+    for (int i = 0; i < number; i++) {
+      out.println();
+    }
+  }
+
   public static void printStats(Set<Stats> statsList) {
     out.println();
     out.println(Ansi.ansi().bold().a(STATS_LINE).reset());
