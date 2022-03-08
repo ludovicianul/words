@@ -1,7 +1,7 @@
 # Words
 `Words` is a set of command line word-based puzzle games. Best way to spend those minutes within the CLI while your build is running ;).  
 
-But `Words` is more than that. It has a set of built-in utilities which can help get better at games: you can check solution candidates based on regexes, 
+But `Words` is more than that. It has a set of built-in utilities that will help you check for solution candidates based on regexes, 
 get word definitions or even learn random words each day.
 
 <p  align="center">
