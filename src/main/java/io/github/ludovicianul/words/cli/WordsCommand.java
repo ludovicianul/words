@@ -34,9 +34,9 @@ import static java.lang.System.*;
 @CommandLine.Command(
     name = "words",
     mixinStandardHelpOptions = true,
-    header = "%n@|green Words version 1.2|@ %n",
+    header = "%n@|green Words version 1.3|@ %n",
     usageHelpAutoWidth = true,
-    version = "words 1.2",
+    version = "words 1.3",
     subcommands = {
       AutoComplete.GenerateCompletion.class,
       CommandLine.HelpCommand.class,
