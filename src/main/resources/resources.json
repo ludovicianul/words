@@ -5,6 +5,9 @@
     },
     {
       "pattern": "words_ro.txt"
+    },
+    {
+      "pattern": "words_ro_ext.txt"
     }
   ]
 }
