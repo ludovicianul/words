@@ -20,7 +20,7 @@ public final class WordDefinition {
   public static String getDefinition(String word, Language language) {
     if (language == Language.EN) {
       return getEnglishDef(word);
-    } else if (language == Language.RO) {
+    } else if (language == Language.RO || language == Language.RO_EXT) {
       return getRomanianDef(word);
     }
     return "not available";
