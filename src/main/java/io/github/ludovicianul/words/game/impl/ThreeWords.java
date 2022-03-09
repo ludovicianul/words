@@ -18,15 +18,14 @@ import static java.lang.System.out;
 public class ThreeWords implements Game {
   private static final char WILD_CHAR = '•';
   private static final int NO_OF_WORDS = 3;
-
   private final List<String> randomWords = new ArrayList<>();
   private final List<String> obfuscatedWords = new ArrayList<>();
   private final List<List<Character>> allPermutations = new ArrayList<>();
   private final List<List<String>> allWordsCombinations = new ArrayList<>();
-
   private final List<Character> removedChars = new ArrayList<>();
   private final List<Integer> removedIndexes = new ArrayList<>();
   private final List<Character> shuffledRemovedChars = new ArrayList<>();
+  private int additionalRedraw = 1;
   private GameContext gameContext;
   private GameOutcome gameOutcome;
   private int attempts;
@@ -67,6 +66,7 @@ public class ThreeWords implements Game {
     obfuscatedWords.forEach(
         word -> System.out.println(ConsoleUtil.formatString(word, Ansi.Color.WHITE)));
     System.out.println();
+    additionalRedraw = additionalRedraw + 2;
   }
 
   private void createWordCombinations() {
@@ -114,12 +114,12 @@ public class ThreeWords implements Game {
     List<String> guessedWords = new ArrayList<>();
     List<Character> guessedChars = new ArrayList<>();
     List<String> candidate = Collections.emptyList();
-
+    String fail = "";
     Scanner scanner = new Scanner(in);
 
     while (guessedWords.size() < NO_OF_WORDS) {
       attempts++;
-      out.println("Enter your guess: ");
+      printEnterGuess(fail);
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       Optional<List<String>> possibleCandidate =
           allWordsCombinations.stream()
@@ -133,15 +133,30 @@ public class ThreeWords implements Game {
         guessedChars.addAll(this.getGuessedChars(indexOfWord));
         guessedAndObfuscated.set(indexOfWord, word);
         candidate = possibleCandidate.get();
+        fail = "";
       } else {
-        out.println("Not a valid combination!");
+        fail = " (Not a valid combination)";
       }
+      clearScreen();
       printState(guessedAndObfuscated);
       printRemainingLetters(guessedChars);
-      out.println();
     }
 
     finishGame(startTime, candidate);
+  }
+
+  private void printEnterGuess(String additional) {
+    out.printf("Enter your guess%s: %n", additional);
+    additionalRedraw++;
+  }
+
+  private void clearScreen() {
+    out.println(
+        Ansi.ansi()
+            .cursorUp(NO_OF_WORDS + 1)
+            .cursorUp(additionalRedraw)
+            .eraseScreen(Ansi.Erase.FORWARD));
+    additionalRedraw = 1;
   }
 
   private void finishGame(long startTime, List<String> candidate) {
@@ -165,6 +180,7 @@ public class ThreeWords implements Game {
     }
     out.println(
         "Remaining letters: " + Ansi.ansi().bold().fgRgb(169, 169, 169).a(remaining).reset());
+    additionalRedraw++;
   }
 
   private void printState(List<String> guessedAndObfuscated) {
@@ -175,6 +191,8 @@ public class ThreeWords implements Game {
         out.println(ConsoleUtil.formatString(word, Ansi.Color.GREEN));
       }
     }
+    out.println();
+    additionalRedraw++;
   }
 
   private List<Character> getGuessedChars(int index) {

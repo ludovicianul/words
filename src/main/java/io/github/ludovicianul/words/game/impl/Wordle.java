@@ -28,7 +28,7 @@ public class Wordle implements Game {
     for (int i = 0; i < gameContext.getSelectedWord().length() + 1; i++) {
       StringBuilder row = new StringBuilder();
       for (int j = 0; j < gameContext.getSelectedWord().length(); j++) {
-        row.append(formatResult(Ansi.Color.WHITE, ' '));
+        row.append(formatResult(Ansi.Color.WHITE, '▢'));
       }
       guessMatrix.add(row.toString());
     }

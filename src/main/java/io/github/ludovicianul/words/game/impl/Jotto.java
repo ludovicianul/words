@@ -8,6 +8,8 @@ import io.github.ludovicianul.words.game.util.ConsoleUtil;
 import org.fusesource.jansi.Ansi;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -16,28 +18,42 @@ import static java.lang.System.out;
 
 @Singleton
 public class Jotto implements Game {
-  private final StringBuilder gameState = new StringBuilder();
+  private final List<String> gameState = new ArrayList<>();
   private GameContext gameContext;
   private GameOutcome gameOutcome;
   private int attempts;
+  private int additionalRedraw = 1;
 
   private void startGame() {
     Scanner scanner = new Scanner(System.in);
+    String failed = "";
     boolean guessed = false;
+
     while (!guessed) {
       attempts++;
-      out.printf("Enter you guess. Attempt %s: %n", attempts);
+      promptSystemIn(failed);
       String word = scanner.nextLine().toUpperCase(Locale.ROOT);
       if (!gameContext.isValidWord(word)) {
-        out.println("Not a valid word!");
-        continue;
+        failed = " (Not a valid word)";
+        additionalRedraw++;
+      } else {
+        failed = "";
+        guessed = gameContext.isGuessed(word);
+        gameState.add(formatWord(word));
       }
-      guessed = gameContext.isGuessed(word);
-      gameState.append(formatWord(word));
-      gameState.append(System.lineSeparator());
-      out.println(gameState);
+      clearScreen();
+      printGameState();
     }
     finishGame();
+  }
+
+  private void promptSystemIn(String additional) {
+    out.printf("Enter you guess. Attempt %s%s: %n", attempts, additional);
+    additionalRedraw++;
+  }
+
+  private void printGameState() {
+    gameState.forEach(out::println);
   }
 
   private void finishGame() {
@@ -60,6 +76,15 @@ public class Jotto implements Game {
     }
     return ConsoleUtil.formatString(word, Ansi.Color.WHITE)
         + ConsoleUtil.formatString(String.valueOf(counter), Ansi.Color.YELLOW);
+  }
+
+  private void clearScreen() {
+    out.println(
+        Ansi.ansi()
+            .cursorUp(gameState.size())
+            .cursorUp(additionalRedraw)
+            .eraseScreen(Ansi.Erase.FORWARD));
+    additionalRedraw = 1;
   }
 
   @Override

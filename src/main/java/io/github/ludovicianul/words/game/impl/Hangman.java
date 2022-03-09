@@ -42,11 +42,16 @@ public class Hangman implements Game {
           marked.size() == gameContext.getSelectedWord().length() || gameContext.isGuessed(word);
 
       if (!guessed) {
+        clearScreen();
         printState();
       }
     }
 
     finishGame(guessed);
+  }
+
+  private void clearScreen() {
+    out.println(Ansi.ansi().cursorUp(6).eraseScreen(Ansi.Erase.FORWARD));
   }
 
   private void finishGame(boolean guessed) {
@@ -62,22 +67,17 @@ public class Hangman implements Game {
   }
 
   private void printEndState() {
+    clearScreen();
+    printState();
     String congrats =
         Ansi.ansi()
             .fgGreen()
             .bold()
             .a(Ansi.Attribute.UNDERLINE)
-            .a("Congrats! Guessed word:")
+            .a("Congrats! You won!")
             .reset()
             .toString();
     out.println(congrats);
-
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < gameContext.getSelectedWord().length(); i++) {
-      builder.append(
-          ConsoleUtil.formatResult(Ansi.Color.GREEN, gameContext.getSelectedWord().charAt(i)));
-    }
-    out.println(builder);
   }
 
   private void printState() {
