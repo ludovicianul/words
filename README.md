@@ -9,12 +9,22 @@ get word definitions or even learn random words each day.
 </p>
 
 # Install
+
+## Homebrew
+
+```
+> brew tap ludovicianul/tap
+> brew install words
+```
+
+## Manual
+
 Download the native binary for your platform from the releases page: [https://github.com/ludovicianul/words/releases](https://github.com/ludovicianul/words/releases).
 
 You can also add `words` to PATH so that you have it available at any time. Example for macOS:
 
 ```shell
-> cp words-macos /usr/local/bin/words
+> cp words /usr/local/bin/words
 ```
 
 # Playing a game
