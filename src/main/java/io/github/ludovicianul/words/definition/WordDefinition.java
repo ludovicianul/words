@@ -32,7 +32,7 @@ public final class WordDefinition {
     try {
       Document document = Jsoup.parse(doGet(wordUrl));
       Elements elements =
-          Xsoup.compile("//*[@id=\"base-pw\"]/main/section/section/div[1]/section[2]")
+          Xsoup.compile("//*[@id=\"top-definitions\"]/div/section[1]/div[1]/div[1]")
               .evaluate(document)
               .getElements();
       return elements.text() + " >> " + wordUrl;
