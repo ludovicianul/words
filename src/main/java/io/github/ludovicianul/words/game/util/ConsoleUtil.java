@@ -13,10 +13,10 @@ import static java.lang.System.out;
 public abstract class ConsoleUtil {
 
   private static final String STATS_LINE =
-      "+------------------------------------------------------------+";
+      "+---------------------------------------------------------------------+";
   private static final String STATS_HEADER =
-      "| Game        | Letters | Total | Lost | Best Att | Fastest  |";
-  private static final String STATS_ROW = "| %-12s| %-8s| %-6s| %-5s| %-9s| %-9s|";
+      "| Game        | Letters | Total | Lost | Best Att | Fastest  | Lang   |";
+  private static final String STATS_ROW = "| %-12s| %-8s| %-6s| %-5s| %-9s| %-9s| %-7s|";
 
   public static void newLines(int number) {
     for (int i = 0; i < number; i++) {
@@ -42,7 +42,8 @@ public abstract class ConsoleUtil {
                           stats.getTotal(),
                           stats.getFails(),
                           stats.getBestMoves(),
-                          stats.getBestTime() + "secs"))
+                          stats.getBestTime() + "secs",
+                          stats.getLanguage()))
                   .reset());
           out.println(Ansi.ansi().bold().a(STATS_LINE).reset());
         });
